@@ -1,8 +1,6 @@
 (ns software.justenough.bank-ocr.core
   (:require [clojure.string :as str]))
 
-(def numbers (str/split-lines (slurp "numbers.txt")))
-
 (def ocr->int
   "This contains a map of the characters that make up every number to the
   integer they represent."
@@ -42,6 +40,8 @@
       acc)))
 
 (defn entry->int-str
+  "Given an entry of OCR characters, return the integer it represents as a
+  string."
   [entry]
   (->> entry
        (ocr-str->char-seqs)
@@ -56,6 +56,8 @@
           entries))
 
 (defn process-file
+  "Given a file path to properly formatted input, return the integers
+  represented by the OCR characters."
   [path]
   (->> path
        (slurp)
