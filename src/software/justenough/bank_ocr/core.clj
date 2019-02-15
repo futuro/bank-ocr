@@ -41,24 +41,35 @@
              (conj acc (apply concat (take 3 numbers))))
       acc)))
 
-(defn entry->int-str
+(defn entry->int-seqs
   "Given an entry of OCR characters, return the integer it represents as a
   string."
   [entry]
   (->> entry
        (ocr-str->char-seqs)
-       (map ocr->int)
-       (str/join)))
+       (map ocr->int)))
 
-(defn process-file
-  "Given a file path to properly formatted input, return the integers
-  represented by the OCR characters."
+(defn path->str-seqs
+  "Given a path, return a seq of OCR entries."
   [path]
   (->> path
        (slurp)
        ;; XXX This will drop trailing newlines, so the last entry will be 3
        ;; lines instead of 4
        (str/split-lines)
-       (partition-all 4) ; Each entry is 4 lines, except the last, thus
-                         ; `partition-all`
-       (map entry->int-str)))
+       (partition-all 4)))
+
+(defn file->int-seqs
+  "Given a file path to properly formatted input, return the integers
+  represented by the OCR characters."
+  [path]
+  (->> path
+       path->str-seqs
+       (map entry->int-seqs)))
+
+;; TODO make this write the strings out to a file
+(defn process-file
+  [path]
+  (->> path
+       (path->str-seqs)
+       (map (comp str/join entry->int-seqs))))
