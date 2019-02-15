@@ -24,17 +24,17 @@
   | |
   |_| becomes `((\\space \\_ \\space \\| \\space \\| \\| \\_ \\|))`"
   [entry]
-  (loop [numbers  (->> entry
-                       ;; An entry may have an empty line, which we don't want
-                       ;; to keep
-                       (remove empty?)
-                       ;; Each OCR number has 3 characters per row; split them
-                       ;; into individual seqs
-                       (map #(partition 3 %))
-                       ;; Each OCR number has 3 rows; order each row's seq one
-                       ;; after the other, top-to-bottom and left-to-right
-                       (apply interleave))
-         acc      []]
+  (loop [numbers (->> entry
+                      ;; An entry may have an empty line, which we don't want
+                      ;; to keep
+                      (remove empty?)
+                      ;; Each OCR number has 3 characters per row; split them
+                      ;; into individual seqs
+                      (map #(partition 3 %))
+                      ;; Each OCR number has 3 rows; order each row's seq one
+                      ;; after the other, top-to-bottom and left-to-right
+                      (apply interleave))
+         acc     []]
     (if (not-empty numbers)
       (recur (drop 3 numbers) ; Drop the OCR number we're processing from the collection
              (conj acc (apply concat (take 3 numbers))))
