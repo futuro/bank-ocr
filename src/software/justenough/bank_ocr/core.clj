@@ -67,6 +67,18 @@
        path->str-seqs
        (map entry->int-seqs)))
 
+(defn checksum-entry
+  ([account-num] (checksum-entry account-num 1))
+  ([account-num sum]
+   (if (empty? account-num)
+     (mod sum 11)
+     (recur (rest account-num)
+            (* sum (+ (first account-num)
+                      ;; The last number is counted alone, so `second` will
+                      ;; return nil; thus the `or` clause
+                      (or (second account-num)
+                          0)))))))
+
 ;; TODO make this write the strings out to a file
 (defn process-file
   [path]
