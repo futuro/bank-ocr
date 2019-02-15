@@ -36,7 +36,8 @@
                       (apply interleave))
          acc     []]
     (if (not-empty numbers)
-      (recur (drop 3 numbers) ; Drop the OCR number we're processing from the collection
+      (recur (drop 3 numbers) ; Advance the collection of OCR numbers past the
+                              ; one we're processing
              (conj acc (apply concat (take 3 numbers))))
       acc)))
 
@@ -58,5 +59,6 @@
        ;; XXX This will drop trailing newlines, so the last entry will be 3
        ;; lines instead of 4
        (str/split-lines)
-       (partition-all 4) ; Each entry is 4 lines, except the last
+       (partition-all 4) ; Each entry is 4 lines, except the last, thus
+                         ; `partition-all`
        (map entry->int-str)))
