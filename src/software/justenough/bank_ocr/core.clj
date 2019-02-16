@@ -49,6 +49,54 @@
        (ocr-str->char-seqs)
        (map ocr->int)))
 
+;;;;;;;;;;;;;;;;
+;; Validation ;;
+;;;;;;;;;;;;;;;;
+
+;; The definition of this checksum, from the coding challenge, is described
+;; essentially as the following:
+;;
+;; account number:  3  4  5  8  8  2  8  6  5
+;; position names:  d9 d8 d7 d6 d5 d4 d3 d2 d1
+;; checksum calculation:
+;; ((d1+d2)*(d2+d3)*(d3+d4)...+d9*d9) mod 11 = 0
+;;
+;; The first thing to notice is that the first digit in the account number isn't
+;; position `d1`, it's position `d9`.
+;;
+;; In english, you take the last number and the second to last number, sum them
+;; together, then multiply the sum by the second to last number added to the
+;; third to last number, and so on, until you've gotten to the first and second
+;; numbers summed up and multiplied by the running product, finally multiplying
+;; the first number with the product. Then return the product modulo 11.
+;;
+;; The second thing to notice, or remember, is that multiplication is
+;; commutative, so you can multiple the sums together however you want.
+;;
+;; Following from this, we can realize that we don't need to reverse our seq of
+;; ints, or jump through other hoops to calculate this checksum in the way
+;; described, but instead can proceed through the digits d9->d1, summing each
+;; successive pair and multiplying them against the running product.
+;;
+;; The product, in turn, can be set at the very beginning to the first
+;; digit (which is position `d9`).
+(defn checksum-entry
+  ([account-num]
+   (loop [processing account-num
+          product    (first processing)]
+     (if (empty? (next processing))
+       (mod product 11)
+       (recur (rest processing)
+              ;; XXX a funny side effect of the checkproduct algorithm as defined in
+              ;; the codingdojo kata is that any two consecutive zeros in an
+              ;; account number validates the whole account number. This feels
+              ;; wrong, tbh, but I can't see any reason to believe it should be
+              ;; different based on how User Story 2 is written
+              (* product (+ (first processing)
+                            ;; The last number is counted alone, so `second` will
+                            ;; return nil; thus the `or` clause
+                            (second processing))))))))
+
 (defn path->str-seqs
   "Given a path, return a seq of OCR entries."
   [path]
@@ -66,18 +114,6 @@
   (->> path
        path->str-seqs
        (map entry->int-seqs)))
-
-(defn checksum-entry
-  ([account-num] (checksum-entry account-num 1))
-  ([account-num sum]
-   (if (empty? account-num)
-     (mod sum 11)
-     (recur (rest account-num)
-            (* sum (+ (first account-num)
-                      ;; The last number is counted alone, so `second` will
-                      ;; return nil; thus the `or` clause
-                      (or (second account-num)
-                          0)))))))
 
 ;; TODO make this write the strings out to a file
 (defn process-file
