@@ -1,6 +1,10 @@
 (ns software.justenough.bank-ocr.core
   (:require [clojure.string :as str]))
 
+;;;;;;;;;;;;;;;;;;;;
+;; OCR Processing ;;
+;;;;;;;;;;;;;;;;;;;;
+
 (def ocr->int
   "This contains a map of the sequence of characters that make up every OCR number
   to the integer they represent."
@@ -96,6 +100,10 @@
                             ;; The last number is counted alone, so `second` will
                             ;; return nil; thus the `or` clause
                             (second processing))))))))
+
+;;;;;;;;;;;;;;;;;;;
+;; Orchestration ;;
+;;;;;;;;;;;;;;;;;;;
 
 (defn path->str-seqs
   "Given a path, return a seq of OCR entries."
