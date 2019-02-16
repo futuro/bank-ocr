@@ -148,7 +148,7 @@
   (->> path
        (slurp)
        ;; XXX This will drop trailing newlines, so the last entry will be 3
-       ;; lines instead of 4
+       ;; lines instead of 4, thus the use of `partition-all` later
        (str/split-lines)
        (partition-all 4)))
 
