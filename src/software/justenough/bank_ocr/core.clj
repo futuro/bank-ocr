@@ -78,13 +78,13 @@
              (conj acc (apply concat (take 3 numbers))))
       acc)))
 
-(defn entry->int-seqs
-  "Given an entry of OCR characters, return the integer it represents as a
-  string."
+(defn parse-entry
+  "Given an OCR entry, return a seq of ints representing each digit in the entry.
+  If an OCR digit can't be parsed, we return `:?` in its place."
   [entry]
   (->> entry
        (ocr-str->char-seqs)
-       (map ocr->int)))
+       (map #(get ocr->int % :?))))
 
 ;;;;;;;;;;;;;;;;
 ;; Validation ;;
@@ -134,6 +134,10 @@
                             ;; return nil; thus the `or` clause
                             (second processing))))))))
 
+(defn valid-entry?
+  [account-num]
+  (zero? (checksum-entry account-num)))
+
 ;;;;;;;;;;;;;;;;;;;
 ;; Orchestration ;;
 ;;;;;;;;;;;;;;;;;;;
@@ -148,17 +152,31 @@
        (str/split-lines)
        (partition-all 4)))
 
-(defn file->int-seqs
+(defn parse-file
   "Given a file path to properly formatted input, return the integers
   represented by the OCR characters."
   [path]
   (->> path
        path->str-seqs
-       (map entry->int-seqs)))
+       (map parse-entry)))
+
+(defn parsed-entry->str
+  [entry]
+  (let [entry-str (str/join entry)]
+    (cond
+      (some #{:?} entry)         (str (str/replace entry-str ":" "") " ILL")
+      (valid-entry? entry)       entry-str
+      (not (valid-entry? entry)) (str entry-str " ERR"))))
 
 ;; TODO make this write the strings out to a file
 (defn process-file
-  [path]
-  (->> path
-       (path->str-seqs)
-       (map (comp str/join entry->int-seqs))))
+  "Given a path pointing to OCR entries, parse each entry and print out each
+  account number followed by one of these strings:
+
+  1. If the entry can be parsed and has a valid checksum, nothing
+  2. If the entry can be parsed, but fails the checksum, \" ERR\"
+  3. If the entry can't be parsed, \" ILL\""
+  [in-path]
+  (->> in-path
+       parse-file
+       (map parsed-entry->str)))
