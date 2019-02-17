@@ -1,0 +1,8 @@
+#kaocha/v1
+{:tests [{:id           :acceptance
+          :test-paths   ["test/acceptance"]
+          :source-paths ["src"]
+          :ns-patterns  [".*test-[^.]+$"]}] ; Namespaces with `.test.` should be run
+ ;; :reporter kaocha.report.progress/progress
+ ;; :plugins [:profiling :notifier]
+ }

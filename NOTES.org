@@ -1,0 +1,12 @@
+* Kaocha Testing framework
+** Why?
+   I wanted to add a small amount of testing to this project, and learning
+   Kaocha seemed like a good way to go about doing that.
+
+** Configuration
+   [[https://cljdoc.org/d/lambdaisland/kaocha/0.0-389/doc/3-configuration][See the config docs]] for a breakdown on every option, but here are the ones
+   I'm going to rely on inside the ~:tests~ key.
+   * ~:id~: What is the particular test config map called
+   * ~:test-paths~: Where to find the test clj files
+   * ~:source-paths~: Where the source is held
+   * ~:ns-patterns~: What namespace should qualify as a test namespace to run
