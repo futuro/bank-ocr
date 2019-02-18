@@ -24,26 +24,25 @@
   order.
 
   F.e.
-   _
-  | |
-  |_| becomes `((\\space \\_ \\space \\| \\space \\| \\| \\_ \\|))`"
-  [entry]
-  (loop [numbers (->> entry
-                      ;; An entry may have an empty line, which we don't want
-                      ;; to keep
-                      (remove empty?)
-                      ;; Each OCR number has 3 characters per row; split them
-                      ;; into individual seqs
-                      (map #(partition 3 %))
-                      ;; Each OCR number has 3 rows; order each row's seq one
-                      ;; after the other, top-to-bottom and left-to-right
-                      (apply interleave))
-         acc     []]
-    (if (not-empty numbers)
-      (recur (drop 3 numbers) ; Advance the collection of OCR numbers past the
-                              ; one we're processing
-             (conj acc (apply concat (take 3 numbers))))
-      acc)))
+  (\" _    \"
+   \"| |  |\"
+   \"|_|  |\")
+  becomes
+  `((\\space \\_ \\space \\| \\space \\| \\| \\_ \\|)
+    (\\space \\space \\space \\space \\space \\| \\space \\space \\|))`
+
+  N.B. Everything beyond the first three items in the passed in seq are dropped,
+  to account for a possible empty fourth line in the entry spec."
+  ([[row1 row2 row3 & _]]
+   (ocr-str->char-seqs row1 row2 row3 []))
+  ([row1 row2 row3 ocr-seqs]
+   (if (or (empty? row1) (empty? row2) (empty? row3))
+     ocr-seqs
+     (recur (drop 3 row1) (drop 3 row2) (drop 3 row3) ; Advance past the number we're processing
+            ;; Join the three rows of the number into a single seq of chars
+            (conj ocr-seqs (concat (take 3 row1)
+                                   (take 3 row2)
+                                   (take 3 row3)))))))
 
 (defn parse-entry
   "Given an OCR entry, return a seq of ints representing each digit in the entry.
