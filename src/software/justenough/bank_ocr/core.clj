@@ -89,7 +89,8 @@
 ;; account number validates the whole account number. This feels
 ;; wrong, tbh, but I can't see any reason to believe it should be
 ;; different based on how User Story 2 is written
-(defn checksum-entry
+(defn- checksum-entry
+  "Calculate the checksum for a given account number."
   ([account-num]
    (mod (->> account-num
              (partition 2 1) ; This gives us the ((d1 d2) (d2 d3)...) groupings
@@ -98,6 +99,7 @@
         11)))
 
 (defn valid-entry?
+  "Does the given account number pass the checksum?"
   [account-num]
   (zero? (checksum-entry account-num)))
 
@@ -124,6 +126,8 @@
        (map parse-entry)))
 
 (defn parsed-entry->str
+  "Given a parsed entry, return its string representation that's meant to be
+  written to a file."
   [entry]
   (let [entry-str (str/join entry)]
     (cond
