@@ -44,6 +44,17 @@
   ([num]
    (repeatedly num #(rand-int 10))))
 
+(defn- int-seq->ocr-entry
+  [ocr-count acc-num]
+  (->> acc-num
+       (map int->ocr)
+       (map #(partition 3 %))
+       (apply interleave)
+       (partition ocr-count)
+       (map (partial apply concat))
+       (map (partial apply str))
+       (str/join "\n")))
+
 (defn gen-ocr-entry
   "Return a map from `:acc-num` to the account number generated (as a seq of ints)
   and `:ocr` to the string OCR representation. Meant for testing."
@@ -51,11 +62,4 @@
   (let [ocr-count 9 ; 9 digits in an account number
         acc-num   (gen-acc-seq ocr-count)]
     {:acc-num acc-num
-     :ocr     (->> acc-num
-                   (map int->ocr)
-                   (map #(partition 3 %))
-                   (apply interleave)
-                   (partition ocr-count)
-                   (map (partial apply concat))
-                   (map (partial apply str))
-                   (str/join "\n"))}))
+     :ocr     (int-seq->ocr-entry ocr-count acc-num)}))
