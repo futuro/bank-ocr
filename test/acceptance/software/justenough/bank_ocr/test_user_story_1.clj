@@ -7,11 +7,6 @@
 
 (deftest parse-account-numbers
   (let [test-values (repeatedly 500 util/gen-ocr-entry)]
-    ;; This is a neat way to generate 500 OCR entries
-    #_(spit "parse-test-entries.txt"
-            (->> test-values
-                 (map :ocr)
-                 (str/join "\n\n")))
     (doseq [{:keys [acc-num ocr]} test-values]
       (t/is (= acc-num
                (ocr/parse-entry (str/split-lines ocr)))))))

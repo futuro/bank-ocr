@@ -11,7 +11,6 @@
 
 (deftest invalid-account-numbers
   (let [processed-entries (ocr/process-file "invalid-entries.txt")]
-    (t/is (every? #(str/ends-with? % " ERR") processed-entries))
     (t/is (= (map #(str (str/join %) " ERR") util/invalid-acc-nums)
              processed-entries))))
 
