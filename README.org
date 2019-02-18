@@ -1,0 +1,16 @@
+* Bank OCR Coding Challenge
+  This project follows the challenge laid out in
+  http://codingdojo.org/kata/BankOCR/. It currently covers User Stories 1
+  through 3, with a test namespace for each, except that
+  ~software.justenough.bank-ocr.core/process-file~ doesn't write anything to a
+  file like User Story 3 mentions, because there was no need, and a simple call
+  to ~(spit "filename" ...)~ would suffice.
+* Testing approach
+  I chose [[https://github.com/lambdaisland/kaocha][Kaocha]] to handle the tests, because I'd read about it in a Clojurists
+  Together update and wanted to see what it was all about. You can try it out by
+  running ~bin/kaocha.sh~, which should Do The Right Thing (TM).
+
+  I've got one test namespace per User Story, as that seemed logical given the
+  layout of the coding exercise, but I could have relied simply on the tests for
+  User Story 3 as well, as that exercises the same code as the tests for stories
+  1 and 2, and I was writing integration tests.
