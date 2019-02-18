@@ -83,22 +83,19 @@
 ;;
 ;; The product, in turn, can be set at the very beginning to the first
 ;; digit (which is position `d9`).
+;;
+;; XXX a funny side effect of the checkproduct algorithm as defined in
+;; the codingdojo kata is that any two consecutive zeros in an
+;; account number validates the whole account number. This feels
+;; wrong, tbh, but I can't see any reason to believe it should be
+;; different based on how User Story 2 is written
 (defn checksum-entry
   ([account-num]
-   (loop [processing account-num
-          product    (first processing)]
-     (if (empty? (next processing))
-       (mod product 11)
-       (recur (rest processing)
-              ;; XXX a funny side effect of the checkproduct algorithm as defined in
-              ;; the codingdojo kata is that any two consecutive zeros in an
-              ;; account number validates the whole account number. This feels
-              ;; wrong, tbh, but I can't see any reason to believe it should be
-              ;; different based on how User Story 2 is written
-              (* product (+ (first processing)
-                            ;; The last number is counted alone, so `second` will
-                            ;; return nil; thus the `or` clause
-                            (second processing))))))))
+   (mod (->> account-num
+             (partition 2 1) ; This gives us the ((d1 d2) (d2 d3)...) groupings
+             (map #(apply + %))
+             (apply * (first account-num)))
+        11)))
 
 (defn valid-entry?
   [account-num]
