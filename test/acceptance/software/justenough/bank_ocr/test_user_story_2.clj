@@ -8,8 +8,8 @@
 
 (deftest valid-account-numbers
   (doseq [acc-num util/valid-acc-nums]
-    (t/is (ocr/valid-entry? acc-num))))
+    (t/is (#'ocr/valid-entry? acc-num))))
 
 (deftest invalid-account-numbers
   (doseq [acc-num util/invalid-acc-nums]
-    (t/is (not (ocr/valid-entry? acc-num)))))
+    (t/is (not (#'ocr/valid-entry? acc-num)))))

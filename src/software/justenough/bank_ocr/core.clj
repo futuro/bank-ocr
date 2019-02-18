@@ -1,11 +1,13 @@
 (ns software.justenough.bank-ocr.core
+  "Parse OCR entries from files as defined in
+  http://codingdojo.org/kata/BankOCR/."
   (:require [clojure.string :as str]))
 
 ;;;;;;;;;;;;;;;;;;;;
 ;; OCR Processing ;;
 ;;;;;;;;;;;;;;;;;;;;
 
-(def ocr->int
+(def ^:private ocr->int
   "This contains a map of the sequence of characters that make up every OCR number
   to the integer they represent."
   {[\space \_ \space \| \space \| \| \_ \|]                 0
@@ -19,7 +21,7 @@
    [\space \_ \space \| \_ \| \| \_ \|]                     8
    [\space \_ \space \| \_ \| \space \_ \|]                 9})
 
-(defn ocr-str->char-seqs
+(defn ^:private ocr-str->char-seqs
   "Given an entry of OCR number characters, return each numbers' characters in
   order.
 
@@ -44,7 +46,7 @@
                                    (take 3 row2)
                                    (take 3 row3)))))))
 
-(defn parse-entry
+(defn ^:private parse-entry
   "Given an OCR entry, return a seq of ints representing each digit in the entry.
   If an OCR digit can't be parsed, we return `:?` in its place."
   [entry]
@@ -89,7 +91,7 @@
 ;; account number validates the whole account number. This feels
 ;; wrong, tbh, but I can't see any reason to believe it should be
 ;; different based on how User Story 2 is written
-(defn- checksum-entry
+(defn ^:private checksum-entry
   "Calculate the checksum for a given account number."
   ([account-num]
    (mod (->> account-num
@@ -98,7 +100,7 @@
              (apply * (first account-num)))
         11)))
 
-(defn valid-entry?
+(defn ^:private valid-entry?
   "Does the given account number pass the checksum?"
   [account-num]
   (zero? (checksum-entry account-num)))
@@ -107,7 +109,7 @@
 ;; Orchestration ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(defn path->str-seqs
+(defn ^:private path->str-seqs
   "Given a path, return a seq of OCR entries."
   [path]
   (->> path
@@ -117,7 +119,7 @@
        (str/split-lines)
        (partition-all 4)))
 
-(defn parse-file
+(defn ^:private parse-file
   "Given a file path to properly formatted input, return the integers
   represented by the OCR characters."
   [path]
@@ -125,7 +127,7 @@
        path->str-seqs
        (map parse-entry)))
 
-(defn parsed-entry->str
+(defn ^:private parsed-entry->str
   "Given a parsed entry, return its string representation that's meant to be
   written to a file."
   [entry]

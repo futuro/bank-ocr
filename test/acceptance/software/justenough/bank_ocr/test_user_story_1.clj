@@ -9,4 +9,4 @@
   (let [test-values (repeatedly 500 util/gen-ocr-entry)]
     (doseq [{:keys [acc-num ocr]} test-values]
       (t/is (= acc-num
-               (ocr/parse-entry (str/split-lines ocr)))))))
+               (#'ocr/parse-entry (str/split-lines ocr)))))))
